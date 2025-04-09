@@ -1,21 +1,24 @@
-import torch as t
-from nnsight import LanguageModel
 import argparse
-import itertools
+import json
 import os
 import random
-import json
-import torch.multiprocessing as mp
 import time
+
 import huggingface_hub
+import torch as t
+import torch.multiprocessing as mp
 from datasets import config
+from nnsight import LanguageModel
+
+# Set Hugging Face cache directory to /workspace
+os.environ["HF_HOME"] = "/workspace"
 
 import demo_config
-from dictionary_learning.utils import hf_dataset_to_generator
+import dictionary_learning.utils as utils
 from dictionary_learning.buffer import ActivationBuffer
 from dictionary_learning.evaluation import evaluate
 from dictionary_learning.training import trainSAE
-import dictionary_learning.utils as utils
+from dictionary_learning.utils import hf_dataset_to_generator
 
 
 def get_args():
@@ -97,9 +100,14 @@ def run_sae_training(
     submodule = utils.get_submodule(model, layer)
     submodule_name = f"resid_post_layer_{layer}"
     io = "out"
-    activation_dim = model.config.hidden_size
+    if "gemma" in model_name:
+        activation_dim = model.config.text_config.hidden_size
+    else:
+        activation_dim = model.config.hidden_size
 
-    generator = hf_dataset_to_generator("monology/pile-uncopyrighted")
+    generator = hf_dataset_to_generator(
+        "monology/pile-uncopyrighted"
+    )  # todo: change data
 
     activation_buffer = ActivationBuffer(
         generator,
