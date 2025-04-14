@@ -49,7 +49,7 @@ class SparsityPenalties:
     gated: list[float]
 
 
-num_tokens = 50_000_000
+num_tokens = 1_000_000_000
 
 print(f"NOTE: Training on {num_tokens} tokens")
 
@@ -61,9 +61,9 @@ WARMUP_STEPS = 1000
 SPARSITY_WARMUP_STEPS = 5000
 DECAY_START_FRACTION = 0.8
 
-learning_rates = [3e-4]
+learning_rates = [5e-5]
 
-wandb_project = "pythia-160m-sweep"
+wandb_project = "fineweb-gemma-3-12b-pt-sae"
 
 LLM_CONFIG = {
     # "EleutherAI/pythia-70m-deduped": LLMConfig(
@@ -75,6 +75,9 @@ LLM_CONFIG = {
     # "google/gemma-2-2b": LLMConfig(
     #     llm_batch_size=4, context_length=1024, sae_batch_size=2048, dtype=t.bfloat16
     # ),
+    "google/gemma-3-12b-pt": LLMConfig(
+        llm_batch_size=4, context_length=1024, sae_batch_size=2048, dtype=t.bfloat16
+    ),
     "google/gemma-3-12b-it": LLMConfig(
         llm_batch_size=4, context_length=1024, sae_batch_size=2048, dtype=t.bfloat16
     ),
@@ -88,7 +91,7 @@ SPARSITY_PENALTIES = SparsityPenalties(
 )
 
 
-TARGET_L0s = [32]
+TARGET_L0s = [32, 128]
 
 
 @dataclass

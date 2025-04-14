@@ -106,9 +106,11 @@ def run_sae_training(
         activation_dim = model.config.hidden_size
 
     generator = hf_dataset_to_generator(
-        "monology/pile-uncopyrighted"
-    )  # todo: change data
-
+        "HuggingFaceFW/fineweb",
+        name="CC-MAIN-2024-10",
+        split="train",
+        streaming=True,
+    )
     activation_buffer = ActivationBuffer(
         generator,
         model,
